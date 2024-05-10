@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>go chat</title>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <div id="app">
+      <div id="chat">
+        <div id="messages"></div>
+        <input id="sendMessage" placeholder="Type a message">
+      </div>
+    </div>
+  </body>
+  <script>
+    // get name from url query string and append to ws connection
+    const name = new URLSearchParams(window.location.search).get('name') || 'anon';
+    const ws = new WebSocket('ws://localhost:8000/ws?name=' + name);
+    const messages = document.getElementById('messages');
+    const sendMessage = document.getElementById('sendMessage');
+
+    ws.onmessage = (event) => {
+      console.log("got message", event.data)
+      const message = document.createElement('div');
+      message.innerText = event.data;
+      messages.appendChild(message);
+    };
+
+    sendMessage.addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') {
+        ws.send(sendMessage.value);
+        sendMessage.value = '';
+      }
+    });
+  </script>
+</html>
